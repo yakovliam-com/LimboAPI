@@ -199,9 +199,9 @@ public class LimboImpl implements Limbo {
       this.respawnPlayer(player);
 
       LimboPlayer limboPlayer = new LimboPlayerImpl(this.plugin, this, player);
-      limboPlayerCompletableFuture.complete(limboPlayer);
-
       sessionHandler.onSpawn(this, limboPlayer);
+
+      limboPlayerCompletableFuture.completeAsync(() -> limboPlayer);
     });
 
     return limboPlayerCompletableFuture;
