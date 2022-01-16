@@ -252,8 +252,12 @@ public class LimboPlayerImpl implements LimboPlayer {
   }
 
   private void sendToRegisteredServer(RegisteredServer server) {
-    this.connection.eventLoop().execute(() -> this.connection.setState(StateRegistry.PLAY));
+    this.setConnectionStateRegistryToPlay();
     this.connection.eventLoop().execute(this.player.createConnectionRequest(server)::fireAndForget);
+  }
+
+  private void setConnectionStateRegistryToPlay() {
+    this.connection.eventLoop().execute(() -> this.connection.setState(StateRegistry.PLAY));
   }
 
   @Override
@@ -274,6 +278,22 @@ public class LimboPlayerImpl implements LimboPlayer {
     }
 
     return 0;
+  }
+
+  @Override
+  public void disconnectFromLimboSessionHandler() {
+    LimboSessionHandlerImpl handler = (LimboSessionHandlerImpl) this.connection.getSessionHandler();
+    if (handler != null) {
+      handler.disconnected();
+
+
+      if (this.plugin.hasLoginQueue(this.player)) {
+        this.plugin.getLoginQueue(this.player).next();
+        return;
+      }
+
+      this.setConnectionStateRegistryToPlay();
+    }
   }
 
   @Override

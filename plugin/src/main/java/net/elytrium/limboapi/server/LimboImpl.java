@@ -41,7 +41,6 @@ import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import net.elytrium.limboapi.LimboAPI;
 import net.elytrium.limboapi.Settings;
 import net.elytrium.limboapi.api.Limbo;
@@ -131,12 +130,12 @@ public class LimboImpl implements Limbo {
   }
 
   @Override
-  public CompletableFuture<LimboPlayer> spawnLimboPlayer(Player apiPlayer, LimboSessionHandler handler) {
+  public LimboPlayer spawnLimboPlayer(Player apiPlayer, LimboSessionHandler handler) {
     ConnectedPlayer player = (ConnectedPlayer) apiPlayer;
     MinecraftConnection connection = player.getConnection();
     Class<? extends LimboSessionHandler> handlerClass = handler.getClass();
 
-    CompletableFuture<LimboPlayer> limboPlayerCompletableFuture = new CompletableFuture<>();
+    LimboPlayer limboPlayer = new LimboPlayerImpl(this.plugin, this, player);
 
     connection.eventLoop().execute(() -> {
       ChannelPipeline pipeline = connection.getChannel().pipeline();
@@ -198,13 +197,10 @@ public class LimboImpl implements Limbo {
 
       this.respawnPlayer(player);
 
-      LimboPlayer limboPlayer = new LimboPlayerImpl(this.plugin, this, player);
       sessionHandler.onSpawn(this, limboPlayer);
-
-      limboPlayerCompletableFuture.completeAsync(() -> limboPlayer);
     });
 
-    return limboPlayerCompletableFuture;
+    return limboPlayer;
   }
 
   @Override

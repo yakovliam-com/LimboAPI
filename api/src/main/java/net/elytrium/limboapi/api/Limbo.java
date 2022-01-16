@@ -8,14 +8,13 @@
 package net.elytrium.limboapi.api;
 
 import com.velocitypowered.api.proxy.Player;
-import java.util.concurrent.CompletableFuture;
 import net.elytrium.limboapi.api.player.LimboPlayer;
 
 public interface Limbo {
 
   void spawnPlayer(Player player, LimboSessionHandler handler);
 
-  CompletableFuture<LimboPlayer> spawnLimboPlayer(Player apiPlayer, LimboSessionHandler handler);
+  LimboPlayer spawnLimboPlayer(Player apiPlayer, LimboSessionHandler handler);
 
   void respawnPlayer(Player player);
 }

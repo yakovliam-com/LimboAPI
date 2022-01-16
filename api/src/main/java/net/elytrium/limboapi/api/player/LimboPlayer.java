@@ -67,4 +67,6 @@ public interface LimboPlayer {
   long getPing();
 
   RegisteredServer getPreviousServer();
+
+  void disconnectFromLimboSessionHandler();
 }
