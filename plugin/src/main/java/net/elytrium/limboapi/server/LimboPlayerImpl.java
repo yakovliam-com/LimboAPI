@@ -130,7 +130,7 @@ public class LimboPlayerImpl implements LimboPlayer {
         throw new IllegalArgumentException(
             "You either need to provide an image of "
                 + MapData.MAP_DIM_SIZE + "x" + MapData.MAP_DIM_SIZE
-            + " pixels or set the resize parameter to true so that API will automatically resize your image."
+                + " pixels or set the resize parameter to true so that API will automatically resize your image."
         );
       }
     }
@@ -272,5 +272,11 @@ public class LimboPlayerImpl implements LimboPlayer {
     }
 
     return 0;
+  }
+
+  @Override
+  public RegisteredServer getPreviousServer() {
+    LimboSessionHandlerImpl handler = (LimboSessionHandlerImpl) this.connection.getSessionHandler();
+    return handler == null ? null : handler.getPreviousServer();
   }
 }

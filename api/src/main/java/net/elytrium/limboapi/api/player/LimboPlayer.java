@@ -65,4 +65,6 @@ public interface LimboPlayer {
   Player getProxyPlayer();
 
   long getPing();
+
+  RegisteredServer getPreviousServer();
 }
