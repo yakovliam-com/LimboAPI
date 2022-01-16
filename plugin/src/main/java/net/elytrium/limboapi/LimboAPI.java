@@ -172,6 +172,11 @@ public class LimboAPI implements LimboFactory {
   }
 
   @Override
+  public Limbo createLimbo(VirtualWorld world, String brandName) {
+    return new LimboImpl(this, world, brandName);
+  }
+
+  @Override
   public PreparedPacket createPreparedPacket() {
     return new PreparedPacketImpl(this);
   }

@@ -40,9 +40,7 @@ import io.netty.channel.ChannelPipeline;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import net.elytrium.limboapi.LimboAPI;
 import net.elytrium.limboapi.Settings;
 import net.elytrium.limboapi.api.Limbo;
@@ -65,7 +63,7 @@ public class LimboImpl implements Limbo {
 
   private final LimboAPI plugin;
   private final VirtualWorld world;
-  private final Map<Class<?>, PreparedPacket> brandMessages = new HashMap<>();
+  private final String brandName;
 
   private PreparedPacket joinPackets;
   private PreparedPacket fastRejoinPackets;
@@ -86,8 +84,13 @@ public class LimboImpl implements Limbo {
   }
 
   public LimboImpl(LimboAPI plugin, VirtualWorld world) {
+    this(plugin, world, null);
+  }
+
+  public LimboImpl(LimboAPI plugin, VirtualWorld world, String brandName) {
     this.plugin = plugin;
     this.world = world;
+    this.brandName = brandName;
 
     this.refresh();
   }
@@ -169,7 +172,7 @@ public class LimboImpl implements Limbo {
       } else {
         connection.delayedWrite(this.joinPackets);
       }
-      connection.delayedWrite(this.getBrandMessage(handlerClass));
+      connection.delayedWrite(this.getBrandMessage());
 
       this.plugin.setLimboJoined(player);
 
@@ -328,20 +331,14 @@ public class LimboImpl implements Limbo {
     return packets;
   }
 
-  private PreparedPacket getBrandMessage(Class<? extends LimboSessionHandler> handlerClass) {
-    if (this.brandMessages.containsKey(handlerClass)) {
-      return this.brandMessages.get(handlerClass);
-    } else {
-      String simpleName = handlerClass.getSimpleName();
-      PreparedPacket preparedPacket = this.plugin.createPreparedPacket()
-          .prepare(version -> this.createBrandMessage(simpleName, version));
-      this.brandMessages.put(handlerClass, preparedPacket);
-      return preparedPacket;
-    }
+  private PreparedPacket getBrandMessage() {
+    return this.plugin.createPreparedPacket()
+        .prepare(this::createBrandMessage);
   }
 
-  private PluginMessage createBrandMessage(String handlerName, ProtocolVersion version) {
-    String brand = "LimboAPI -> (" + handlerName + ")";
+  private PluginMessage createBrandMessage(ProtocolVersion version) {
+    String brand = this.brandName == null ? "LimboAPI -> (Limbo)" : this.brandName;
+
     ByteBuf bufWithBrandString = Unpooled.buffer();
     if (version.compareTo(ProtocolVersion.MINECRAFT_1_8) < 0) {
       bufWithBrandString.writeCharSequence(brand, StandardCharsets.UTF_8);

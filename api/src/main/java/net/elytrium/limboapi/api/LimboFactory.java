@@ -80,6 +80,15 @@ public interface LimboFactory {
   Limbo createLimbo(VirtualWorld world);
 
   /**
+   * Creates new virtual server.
+   *
+   * @param world Virtual world.
+   * @param brandName The brand name of the Limbo server to show on the Minecraft Client
+   * @return new virtual server.
+   */
+  Limbo createLimbo(VirtualWorld world, String brandName);
+
+  /**
    * Creates new prepared packet builder.
    *
    * @return new prepared packet.
